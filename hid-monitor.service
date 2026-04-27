@@ -1,0 +1,25 @@
+[Unit]
+Description=STM32 HID Monitor (Priority Shutdown)
+# 기본 종료 의존성을 무시하여 종료 순서를 수동으로 제어함
+DefaultDependencies=no
+
+# 부팅 시: 장치가 로드된 후 실행
+After=local-fs.target systemd-modules-load.service
+
+# 종료 시: 모든 일반 서비스(게임 모드 포함)가 꺼지기 '전'에 이 서비스가 먼저 중단되도록 강제
+# 이것이 종료 시퀀스의 순서를 바꾸는 핵심 설정입니다.
+Before=multi-user.target shutdown.target reboot.target
+Conflicts=reboot.target umount.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/hid-monitor.sh
+# 종료 시그널 전달 후 cleanup 함수가 완료될 때까지 대기
+KillSignal=SIGTERM
+TimeoutStopSec=5
+KillMode=process
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+
