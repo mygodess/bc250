@@ -7,7 +7,7 @@ jobs:
   build-iso:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       - name: Build ISO
@@ -29,3 +29,13 @@ jobs:
             ${{ steps.build.outputs.iso_path }}
             ${{ steps.build.outputs.iso_path }}.sha256
           retention-days: 7
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: bc250-43.20260126
+          name: BC250 Bazzite 43.20260126
+          files: |
+            ${{ steps.build.outputs.iso_path }}
+            ${{ steps.build.outputs.iso_path }}.sha256
+
